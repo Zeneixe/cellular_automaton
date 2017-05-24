@@ -14,6 +14,9 @@ type CellValue
     = Empty
     | Full
 
+
+type alias Grid = { rows : List CellRow }
+
 type alias CellRow = { cells : List Cell }
 
 type alias Cell = { value : CellValue }
@@ -31,6 +34,11 @@ cellClass c =
     else
       "cell cell--full"
 
+renderGrid : Grid -> Html Msg
+renderGrid g =
+    div [ class "cell-grid"]
+        ( List.map (\r -> renderCellRow r) g.rows )
+
 renderCellRow : CellRow -> Html Msg
 renderCellRow r =
     div [ class "cell-row" ]
@@ -42,7 +50,18 @@ renderCell c =
 
 view : Model -> Html Msg
 view model =
-    renderCellRow ( CellRow [ Cell Empty , Cell Full, Cell Empty ] )
+    renderGrid
+        ( Grid
+            [ CellRow
+                [ Cell Full
+                ]
+            , CellRow
+                [ Cell Empty
+                , Cell Full
+                , Cell Empty
+                ]
+            ]
+        )
 
 type Msg
     = None

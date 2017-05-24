@@ -9,9 +9,10 @@
   flex-direction: row;
 }
 
-.cell-container {
+.cell-grid {
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }

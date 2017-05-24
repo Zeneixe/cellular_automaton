@@ -31,12 +31,10 @@ cellClass c =
     else
       "cell cell--full"
 
-renderCellRow : Html Msg
-renderCellRow =
+renderCellRow : CellRow -> Html Msg
+renderCellRow r =
     div [ class "cell-row" ]
-        [ renderCell { value = Empty }
-        , renderCell { value = Full }
-        ]
+        ( List.map (\c -> renderCell c) r.cells )
 
 renderCell : Cell -> Html Msg
 renderCell c =
@@ -44,7 +42,7 @@ renderCell c =
 
 view : Model -> Html Msg
 view model =
-    renderCellRow
+    renderCellRow ( CellRow [ Cell Empty , Cell Full, Cell Empty ] )
 
 type Msg
     = None

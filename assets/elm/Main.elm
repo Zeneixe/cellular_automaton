@@ -1,5 +1,8 @@
 module Main exposing (..)
 
+import Array exposing (..)
+import Maybe exposing (..)
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
@@ -21,11 +24,42 @@ type alias CellRow = { cells : List Cell }
 
 type alias Cell = { value : CellValue }
 
-type alias Model = { value : Int }
+type alias Model = { grid : Grid }
+
+automateCell : Int -> CellRow -> Cell
+automateCell i prev =
+    let
+        prevArray = prev.cells |> Array.fromList
+        temp = withDefault ( Cell Empty ) ( Array.get i prevArray )
+    in
+        Cell Full
+
+automateRow : Int -> CellRow -> CellRow
+automateRow n prev =
+    let
+        rowSize = 1 + (2 * n)
+        range = List.range 1 rowSize
+        row = CellRow ( range |> List.map ( \i -> automateCell i prev ) )
+    in
+        row
+
+initialRow : CellRow
+initialRow =
+    CellRow [ Cell Full ]
+
+initialGrid : Grid
+initialGrid =
+    let
+        row0 = initialRow
+        row1 = automateRow 1 row0
+        row2 = automateRow 2 row1
+        row3 = automateRow 3 row2
+    in
+        Grid [ row0, row1, row2, row3 ]
 
 model : Model
 model =
-    { value = 0 }
+    Model initialGrid
 
 cellClass : Cell -> String
 cellClass c =
@@ -50,18 +84,7 @@ renderCell c =
 
 view : Model -> Html Msg
 view model =
-    renderGrid
-        ( Grid
-            [ CellRow
-                [ Cell Full
-                ]
-            , CellRow
-                [ Cell Empty
-                , Cell Full
-                , Cell Empty
-                ]
-            ]
-        )
+    renderGrid model.grid
 
 type Msg
     = None

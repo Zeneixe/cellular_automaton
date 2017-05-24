@@ -3,3 +3,30 @@
 .stuff {
   display: block;
 }
+
+.cell-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.cell-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell {
+  margin: 0.25em;
+  width: 1em;
+  height: 1em;
+  background-color: skyblue;
+}
+
+.cell--empty {
+  background-color: black;
+}
+
+.cell--full {
+  background-color: teal;
+}

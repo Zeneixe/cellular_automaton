@@ -24,7 +24,7 @@ module.exports = (env) => {
     entry: {
       app: [
         "js/app.js",
-        "stylus/app.styl",
+        "css/app.css",
         "elm/Main.elm"
       ]
     },
@@ -76,13 +76,12 @@ module.exports = (env) => {
         },
 
         {
-          test: /\.(css|styl)$/,
+          test: /\.(css)$/,
           exclude: /node_modules/,
           use: isDev ? [
             "style-loader",
             "css-loader",
-            "postcss-loader",
-            "stylus-loader"
+            "postcss-loader"
           ] : ExtractTextPlugin.extract({
             fallback: "style-loader",
             use: ["css-loader", "postcss-loader", "stylus-loader"]
@@ -92,7 +91,7 @@ module.exports = (env) => {
         {
           test: /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader: 'elm-webpack-loader?cwd=' + elmSource
+          loader: 'elm-webpack-loader?verbose=true&warn=true&debug=true&cwd=' + elmSource
         }
       ],
       noParse: [/\.elm$/]
@@ -100,7 +99,7 @@ module.exports = (env) => {
 
     resolve: {
       modules: ["node_modules", __dirname],
-      extensions: [".js", ".json", ".jsx", ".css", ".styl", ".elm"]
+      extensions: [".js", ".json", ".jsx", ".css", ".elm"]
     },
 
     plugins: isDev ? [

@@ -1,9 +1,5 @@
 /* This file is for your main application css. */
 
-.stuff {
-  display: block;
-}
-
 .cell-row {
   display: flex;
   flex-direction: row;
@@ -18,10 +14,9 @@
 }
 
 .cell {
-  margin: 0.25em;
+  margin: 0.0625em;
   width: 1em;
   height: 1em;
-  background-color: skyblue;
 }
 
 .cell--empty {
@@ -29,5 +24,5 @@
 }
 
 .cell--full {
-  background-color: teal;
+  background-color: white;
 }

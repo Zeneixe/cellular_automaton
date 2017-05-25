@@ -32,13 +32,13 @@ automateCell i prev =
         prevArray = prev.cells |> Array.fromList
         temp = withDefault ( Cell Empty ) ( Array.get i prevArray )
     in
-        Cell Full
+        temp
 
 automateRow : Int -> CellRow -> CellRow
 automateRow n prev =
     let
         rowSize = 1 + (2 * n)
-        range = List.range 1 rowSize
+        range = List.range 0 (rowSize - 1)
         row = CellRow ( range |> List.map ( \i -> automateCell i prev ) )
     in
         row

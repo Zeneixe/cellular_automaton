@@ -85,6 +85,7 @@ initialRow : CellRow
 initialRow =
     CellRow [ Cell Full ]
 
+automateGrid : number -> List CellRow -> number1 -> CellRow -> List CellRow
 automateGrid maxRows grid index prev =
     let
         newRow = automateRow index prev
@@ -99,7 +100,7 @@ automateGrid maxRows grid index prev =
 model : Model
 model =
     let
-        initialGrid = Grid (automateGrid 250 [initialRow] 1 initialRow)
+        initialGrid = Grid (automateGrid 125 [initialRow] 1 initialRow)
     in
         Model initialGrid
 

@@ -15,8 +15,8 @@
 
 .cell {
   margin: 0.03125em;
-  width: 0.125em;
-  height: 0.125em;
+  width: 0.25em;
+  height: 0.25em;
 }
 
 .cell--empty {

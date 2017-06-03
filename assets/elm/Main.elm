@@ -85,36 +85,23 @@ initialRow : CellRow
 initialRow =
     CellRow [ Cell Full ]
 
-initialGrid : Grid
-initialGrid =
+automateGrid maxRows grid index prev =
     let
-        row0 = initialRow
-        row1 = automateRow 1 row0
-        row2 = automateRow 2 row1
-        row3 = automateRow 3 row2
-        row4 = automateRow 4 row3
-        row5 = automateRow 5 row4
-        row6 = automateRow 6 row5
-        row7 = automateRow 7 row6
-
-        row8 = automateRow 8 row7
-        row9 = automateRow 9 row8
-        row10 = automateRow 10 row9
-        row11 = automateRow 11 row10
-        row12 = automateRow 12 row11
-        row13 = automateRow 13 row12
-        row14 = automateRow 14 row13
-        row15 = automateRow 15 row14
-        row16 = automateRow 16 row15
-        row17 = automateRow 17 row16
-        row18 = automateRow 18 row17
-        row19 = automateRow 19 row18
+        newRow = automateRow index prev
+        newGrid = grid ++ [newRow]
+        newIndex = index + 1
     in
-        Grid [ row0, row1, row2, row3, row4, row5, row6, row7, row8, row9, row10, row11, row12, row13, row14, row15, row16, row17, row18, row19 ]
+      if (index < maxRows) then
+          automateGrid maxRows newGrid newIndex newRow
+      else
+          grid
 
 model : Model
 model =
-    Model initialGrid
+    let
+        initialGrid = Grid (automateGrid 250 [initialRow] 1 initialRow)
+    in
+        Model initialGrid
 
 cellClass : Cell -> String
 cellClass c =

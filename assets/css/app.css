@@ -20,9 +20,9 @@
 }
 
 .cell--empty {
-  background-color: black;
+  background-color: white;
 }
 
 .cell--full {
-  background-color: white;
+  background-color: black;
 }

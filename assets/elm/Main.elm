@@ -107,9 +107,9 @@ model =
 cellClass : Cell -> String
 cellClass c =
     if c.value == Full then
-      "cell cell--empty"
-    else
       "cell cell--full"
+    else
+      "cell cell--empty"
 
 renderGrid : Grid -> Html Msg
 renderGrid g =

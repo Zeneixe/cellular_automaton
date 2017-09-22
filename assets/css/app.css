@@ -1,5 +1,10 @@
 /* This file is for your main application css. */
 
+body {
+  background-color: #eee;
+  margin: 0;
+}
+
 .cell-row {
   display: flex;
   flex-direction: row;
@@ -28,4 +33,26 @@
   width: 1em;
   height: 1em;
   margin: 0.125em;
+}
+
+.rules {
+  width: 100%;
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  top: 0;
+  padding-top: 1em;
+  align-items: center;
+  justify-content: center;
+}
+
+.rule + .rule {
+  margin-left: 2em;
+}
+
+.rule__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }

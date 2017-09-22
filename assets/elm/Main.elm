@@ -5,6 +5,7 @@ import Maybe exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 main : Program Never Model Msg
 main =
@@ -112,7 +113,7 @@ model =
     in
         Model initialGrid rules
 
-
+cellClass : CellValue -> CellSize -> Attribute Msg
 cellClass c s =
     classList
         [ ("cell", True)
@@ -134,31 +135,78 @@ viewCell : CellValue -> CellSize -> Html Msg
 viewCell c s =
     div [ (cellClass c s) ] [ ]
 
+
+viewRules : Ruleset -> Html Msg
 viewRules rules =
-    div [ ]
+    div [ class "rules" ]
         [ viewRule rules.rule1 1
         , viewRule rules.rule2 2
-        , viewRule rules.rule4 2
-        , viewRule rules.rule8 2
-        , viewRule rules.rule16 2
-        , viewRule rules.rule32 2
-        , viewRule rules.rule64 2
+        , viewRule rules.rule4 4
+        , viewRule rules.rule8 8
+        , viewRule rules.rule16 16
+        , viewRule rules.rule32 32
+        , viewRule rules.rule64 64
         , viewRule rules.rule128 128
         ]
 
+viewRule : CellValue -> Int -> Html Msg
 viewRule rule number =
-    viewCell rule Large
+    let
+        ( ruleL, ruleM, ruleR ) = case number of
+            1 -> ( Empty, Empty, Empty )
+            2 -> ( Empty, Empty, Full )
+            4 -> ( Empty, Full, Empty )
+            8 -> ( Empty, Full, Full )
+            16 -> ( Full, Empty, Empty )
+            32 -> ( Full, Empty, Full )
+            64 -> ( Full, Full, Empty )
+            128 -> ( Full, Full, Full )
+            _ -> ( Empty, Empty, Empty )
+    in
+        div [ class "rule", onClick ( SwitchRule number ) ]
+            [ div [ class "rule__row" ]
+                [ viewCell ruleL Large
+                , viewCell ruleM Large
+                , viewCell ruleR Large
+                ]
+            , div [ class "rule__row" ]
+                [ viewCell rule Large
+                ]
+            ]
 
 view : Model -> Html Msg
 view model =
-    div []
+    div [ class "main" ]
         [ viewRules model.rules
         , viewGrid model.grid
         ]
 
 type Msg
-    = None
+    = SwitchRule Int
+
+
+invert : CellValue -> CellValue
+invert cell =
+    if ( cell == Full ) then
+        Empty
+    else
+        Full
 
 update : Msg -> Model -> Model
 update msg model =
-    model
+    let
+        oldRules = model.rules
+        newRules = case msg of
+            SwitchRule ruleName ->
+                case ruleName of
+                    1 -> { oldRules | rule1 = invert oldRules.rule1 }
+                    2 -> { oldRules | rule2 = invert oldRules.rule2 }
+                    4 -> { oldRules | rule4 = invert oldRules.rule4 }
+                    8 -> { oldRules | rule8 = invert oldRules.rule8 }
+                    16 -> { oldRules | rule16 = invert oldRules.rule16 }
+                    32 -> { oldRules | rule32 = invert oldRules.rule32 }
+                    64 -> { oldRules | rule64 = invert oldRules.rule64 }
+                    128 -> { oldRules | rule128 = invert oldRules.rule128 }
+                    _ -> oldRules
+    in
+        { model | rules = newRules }

@@ -48,38 +48,38 @@ initRules : Ruleset
 initRules =
     Ruleset Empty Full Full Full Full Empty Empty Empty
 
-checkRulesForCell : CellValue -> CellValue -> CellValue -> CellValue
-checkRulesForCell prevLeft prevMiddle prevRight =
+checkRulesForCell : Ruleset -> CellValue -> CellValue -> CellValue -> CellValue
+checkRulesForCell ruleset prevLeft prevMiddle prevRight =
     let
         rule = RowRule prevLeft prevMiddle prevRight
     in
         case rule of
-            RowRule Empty Empty Empty -> Empty
-            RowRule Empty Empty Full -> Full
-            RowRule Empty Full Empty -> Full
-            RowRule Empty Full Full -> Full
-            RowRule Full Empty Empty -> Full
-            RowRule Full Empty Full -> Empty
-            RowRule Full Full Empty -> Empty
-            RowRule Full Full Full -> Empty
+            RowRule Empty Empty Empty -> ruleset.rule1
+            RowRule Empty Empty Full -> ruleset.rule2
+            RowRule Empty Full Empty -> ruleset.rule4
+            RowRule Empty Full Full -> ruleset.rule8
+            RowRule Full Empty Empty -> ruleset.rule16
+            RowRule Full Empty Full -> ruleset.rule32
+            RowRule Full Full Empty -> ruleset.rule64
+            RowRule Full Full Full -> ruleset.rule128
 
-automateCell : Int -> CellRow -> Cell
-automateCell i prev =
+automateCell : Ruleset -> Int -> CellRow -> Cell
+automateCell ruleset i prev =
     let
         prevArray = prev.cells |> Array.fromList
         prevLeft = withDefault ( Cell Empty ) ( Array.get (i - 2) prevArray )
         prevMiddle = withDefault ( Cell Empty ) ( Array.get (i - 1) prevArray )
         prevRight = withDefault ( Cell Empty ) ( Array.get i prevArray )
-        value = checkRulesForCell prevLeft.value prevMiddle.value prevRight.value
+        value = checkRulesForCell ruleset prevLeft.value prevMiddle.value prevRight.value
     in
         Cell value
 
-automateRow : Int -> CellRow -> CellRow
-automateRow n prev =
+automateRow : Ruleset -> Int -> CellRow -> CellRow
+automateRow ruleset n prev =
     let
         rowSize = 1 + (2 * n)
         range = List.range 0 (rowSize - 1)
-        row = CellRow ( range |> List.map ( \i -> automateCell i prev ) )
+        row = CellRow ( range |> List.map ( \i -> automateCell ruleset i prev ) )
     in
         row
 
@@ -88,20 +88,21 @@ initialRow =
     CellRow [ Cell Full ]
 
 automateGrid
-    : number
+    : Ruleset
+    -> number
     -> List CellRow
     -> number
     -> CellRow
     -> List CellRow
-automateGrid maxRows grid index prev =
+automateGrid ruleset maxRows grid index prev =
     let
-        newRow = automateRow index prev
+        newRow = automateRow ruleset index prev
         newGrid = grid ++ [newRow]
         newIndex = index + 1
 
     in
       if (index < maxRows) then
-          automateGrid maxRows newGrid newIndex newRow
+          automateGrid ruleset maxRows newGrid newIndex newRow
       else
           grid
 
@@ -109,7 +110,7 @@ model : Model
 model =
     let
         rules = initRules
-        initialGrid = Grid (automateGrid 125 [initialRow] 1 initialRow)
+        initialGrid = Grid (automateGrid rules 125 [initialRow] 1 initialRow)
     in
         Model initialGrid rules
 
@@ -208,5 +209,7 @@ update msg model =
                     64 -> { oldRules | rule64 = invert oldRules.rule64 }
                     128 -> { oldRules | rule128 = invert oldRules.rule128 }
                     _ -> oldRules
+
+        newGrid = Grid (automateGrid newRules 125 [initialRow] 1 initialRow)
     in
-        { model | rules = newRules }
+        { model | rules = newRules, grid = newGrid }

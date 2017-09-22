@@ -18,6 +18,9 @@ type CellValue
     = Empty
     | Full
 
+type CellSize
+    = Small
+    | Large
 
 type alias Grid = { rows : List CellRow }
 
@@ -25,41 +28,39 @@ type alias CellRow = { cells : List Cell }
 
 type alias Cell = { value : CellValue }
 
-type alias Model = { grid : Grid }
+type alias Model = { grid : Grid, rules : Ruleset }
 
-type alias Rule =
-    { prevLeft : CellValue
-    , prevMiddle : CellValue
-    , prevRight : CellValue
-    , value : CellValue
+type RowRule = RowRule CellValue CellValue CellValue
+
+type alias Ruleset =
+    { rule1 : CellValue
+    , rule2 : CellValue
+    , rule4 : CellValue
+    , rule8 : CellValue
+    , rule16 : CellValue
+    , rule32 : CellValue
+    , rule64 : CellValue
+    , rule128 : CellValue
     }
 
-rules : List Rule
-rules =
-    [ Rule Full Full Full Empty
-    , Rule Full Full Empty Empty
-    , Rule Full Empty Full Empty
-    , Rule Full Empty Empty Full
-    , Rule Empty Full Full Full
-    , Rule Empty Full Empty Full
-    , Rule Empty Empty Full Full
-    , Rule Empty Empty Empty Empty
-    ]
+initRules : Ruleset
+initRules =
+    Ruleset Empty Full Full Full Full Empty Empty Empty
 
-checkRulesForCell : List Rule -> CellValue -> CellValue -> CellValue -> CellValue
-checkRulesForCell rules prevLeft prevMiddle prevRight =
+checkRulesForCell : CellValue -> CellValue -> CellValue -> CellValue
+checkRulesForCell prevLeft prevMiddle prevRight =
     let
-        results = List.map (\rule ->
-            if (rule.prevLeft == prevLeft) && (rule.prevMiddle == prevMiddle) && (rule.prevRight == prevRight) then
-              rule.value
-            else
-              Empty
-        ) rules
+        rule = RowRule prevLeft prevMiddle prevRight
     in
-        if (List.any (\c -> c == Full) results) then
-          Full
-        else
-          Empty
+        case rule of
+            RowRule Empty Empty Empty -> Empty
+            RowRule Empty Empty Full -> Full
+            RowRule Empty Full Empty -> Full
+            RowRule Empty Full Full -> Full
+            RowRule Full Empty Empty -> Full
+            RowRule Full Empty Full -> Empty
+            RowRule Full Full Empty -> Empty
+            RowRule Full Full Full -> Empty
 
 automateCell : Int -> CellRow -> Cell
 automateCell i prev =
@@ -68,7 +69,7 @@ automateCell i prev =
         prevLeft = withDefault ( Cell Empty ) ( Array.get (i - 2) prevArray )
         prevMiddle = withDefault ( Cell Empty ) ( Array.get (i - 1) prevArray )
         prevRight = withDefault ( Cell Empty ) ( Array.get i prevArray )
-        value = checkRulesForCell rules prevLeft.value prevMiddle.value prevRight.value
+        value = checkRulesForCell prevLeft.value prevMiddle.value prevRight.value
     in
         Cell value
 
@@ -85,12 +86,18 @@ initialRow : CellRow
 initialRow =
     CellRow [ Cell Full ]
 
-automateGrid : number -> List CellRow -> number1 -> CellRow -> List CellRow
+automateGrid
+    : number
+    -> List CellRow
+    -> number
+    -> CellRow
+    -> List CellRow
 automateGrid maxRows grid index prev =
     let
         newRow = automateRow index prev
         newGrid = grid ++ [newRow]
         newIndex = index + 1
+
     in
       if (index < maxRows) then
           automateGrid maxRows newGrid newIndex newRow
@@ -100,34 +107,54 @@ automateGrid maxRows grid index prev =
 model : Model
 model =
     let
+        rules = initRules
         initialGrid = Grid (automateGrid 125 [initialRow] 1 initialRow)
     in
-        Model initialGrid
+        Model initialGrid rules
 
-cellClass : Cell -> String
-cellClass c =
-    if c.value == Full then
-      "cell cell--full"
-    else
-      "cell cell--empty"
 
-renderGrid : Grid -> Html Msg
-renderGrid g =
+cellClass c s =
+    classList
+        [ ("cell", True)
+        , ("cell--full", (c == Full))
+        , ("cell--large", (s == Large))
+        ]
+
+viewGrid : Grid -> Html Msg
+viewGrid g =
     div [ class "cell-grid"]
-        ( List.map (\r -> renderCellRow r) g.rows )
+        ( List.map (\r -> viewCellRow r) g.rows )
 
-renderCellRow : CellRow -> Html Msg
-renderCellRow r =
+viewCellRow : CellRow -> Html Msg
+viewCellRow r =
     div [ class "cell-row" ]
-        ( List.map (\c -> renderCell c) r.cells )
+        ( List.map (\c -> viewCell c.value Small) r.cells )
 
-renderCell : Cell -> Html Msg
-renderCell c =
-    div [ class (cellClass c) ] [ ]
+viewCell : CellValue -> CellSize -> Html Msg
+viewCell c s =
+    div [ (cellClass c s) ] [ ]
+
+viewRules rules =
+    div [ ]
+        [ viewRule rules.rule1 1
+        , viewRule rules.rule2 2
+        , viewRule rules.rule4 2
+        , viewRule rules.rule8 2
+        , viewRule rules.rule16 2
+        , viewRule rules.rule32 2
+        , viewRule rules.rule64 2
+        , viewRule rules.rule128 128
+        ]
+
+viewRule rule number =
+    viewCell rule Large
 
 view : Model -> Html Msg
 view model =
-    renderGrid model.grid
+    div []
+        [ viewRules model.rules
+        , viewGrid model.grid
+        ]
 
 type Msg
     = None

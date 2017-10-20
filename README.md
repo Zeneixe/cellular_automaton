@@ -1,62 +1,107 @@
-# CellularAutomaton
+# elm-webpack-starter
 
-## Ahoy-hoy!
-This a basic bare-bone setup for new Phoenix projects.
 
-## What's inside?
-Elixir Phoenix, Webpack, Stylus and React with Hot Module Replacement.
+### About:
+A simple Webpack setup for writing [Elm](http://elm-lang.org/) apps:
 
-## What am I supposed to do with it?
-Extend it, build new cool things with it – whatever the hell you want!
+* Dev server with live reloading, HMR
+* Support for CSS/SCSS (with Autoprefixer), image assets
+* Bootstrap 3.3+ (Sass version)
+* Bundling and minification for deployment
+* Basic app scaffold, using `Html.beginnerProgram`
+* A snippet of example code to get you started!
 
-## Who are you?
-This guy: [Letmecode](https://twitter.com/designingcode)
 
-## Why CellularAutomaton?
-Several reasons.
-
-1. **Brunch**, the default Phoenix build-tool, is about as useful as a sandbox in the desert. But hey, at least it's also annoying.
-
-2. **React** and **Phoenix** are a golden match, but the former seems to work best with a proper **Webpack** setup. I was sick of building one for each project, so I build a general setup to start from.
-
-## Your setup sucks!!11eleven
-Fair enough, don't use it then. Oh, and don't forget to light yourself on fire. <sup id="a1">[‡](#f1)</sup>
-
-## Installation
-
-##### Clone the repository:
+### Install:
+Clone this repo into a new project folder, e.g. `my-elm-project`:
 ```
-git clone https://github.com/odiumediae/cellular_automaton.git
+git clone https://github.com/moarwick/elm-webpack-starter my-elm-project
+cd my-elm-project
 ```
 
-##### Change directory to the project:
+Re-initialize the project folder as your own repo:
 ```
-cd cellular_automaton
-```
-
-##### Do the CellularAutomaton setup:
-```
-mix do cellular_automaton.setup
-```
-**Note** YOu don't need to install the npm modules manually anymore, `cellular_automaton.setup` should do that automatically. For convenience the setup uses Yarn, if installed, and a fallback to npm when it's not installed. You can, of course, still skip `cellular_automaton.setup`, if you want more control by manually `cd`ing into `./assets` and running `npm install`, but I'm too lazy to do that ;) 
-
-##### Start your Phoenix app in IEx:
-```shell
-iex -S mix phoenix.server
+rm -rf .git         # on Windows: rmdir .git /s /q
+git init
+git add .
+git commit -m 'first commit'
 ```
 
-## Changelog
+Install all dependencies using the handy `reinstall` script:
+```
+npm run reinstall
+```
+*This does a clean (re)install of all npm and elm packages, plus a global elm install.*
 
-##### v0.1.2
-* generated a completely new Phoenix app (1.3.0-rc.1), in order to minimise inconsistencies bewteen new conventions and how things worked in Phoenix 1.2.x, particularly in regard to folder structure and contexts. You can read up on that in a few minutes [here](https://hexdocs.pm/phoenix/1.3.0-rc.1/Mix.Tasks.Phx.Gen.Context.html#content) and [here](https://elixirforum.com/t/how-to-determine-contexts-with-phoenix-1-3/4367) or simply watch @chrismccord's [nice keynote](https://youtu.be/tMO28ar0lW8) from the Lonestar ElixirConf 2017
-* added the mix task `cellular_automaton.frontend` and plugged it into `cellular_automaton.setup` in order to automatically install npm modules along with the rest of the setup. Just run `cellular_automaton.setup` after cloning the repo and you can run `iex -S mix phx.server`
-* renamed the wrongly named `iex.exs` to .iex.exs` and added some aliases so you don't have to alias the most used modules when trying out how to do stuff iwthin the REPL. You can simply add or remove imports, etc. to cater your needs
 
-#### v0.1.3
-* removed superfluous copy of old assets folder
-* removed `ecto.migrate` from `cellular_automaton.setup` task in mix.exs
+### Serve locally:
+```
+npm start
+```
+* Access app at `http://localhost:8080/`
+* Get coding! The entry point file is `src/elm/Main.elm`
+* Browser will refresh automatically on any file changes..
 
-----
 
-###### Footnotes
-<sup id="f1">‡</sup> Don't actually do that, it freaking hurts! [↩](#a1)
+### Build & bundle for prod:
+```
+npm run build
+```
+
+* Files are saved into the `/dist` folder
+* To check it, open `dist/index.html`
+
+
+### Changelog
+
+**Ver 0.8.6**
+* Update Packages (-> Webpack 2)
+* fix paths in file-loader
+* clean up build script
+
+**Ver 0.8.5**
+* Fix loading path of generated js file, per [Issue 47](https://github.com/moarwick/elm-webpack-starter/issues/47)
+
+**Ver 0.8.4**
+* Fix hot reloading of components, per [Issue 44](https://github.com/moarwick/elm-webpack-starter/issues/44)
+
+**Ver 0.8.3**
+* Update packages
+* Attempt to fix path issues when building for prod (temp)
+
+**Ver 0.8.2**
+* Webpack config improvements (PR by [Lesuk](https://github.com/moarwick/elm-webpack-starter/pull/39))
+
+**Ver 0.8.0**
+* Update to Elm 0.18, use `debug=true` on webpack loader (PR by [douglascorrea](https://github.com/moarwick/elm-webpack-starter/pull/33))
+* Add a script for one-step installs
+* Update to latest packages
+
+**Ver 0.7.1**
+* Fix favicon issues, per [Issue 30](https://github.com/moarwick/elm-webpack-starter/issues/30)
+
+**Ver 0.7.0**
+* Modify project structure, per [Issue 26](https://github.com/moarwick/elm-webpack-starter/issues/26)
+* Include Bootstrap JS, per [Issue 28](https://github.com/moarwick/elm-webpack-starter/issues/28)
+* More helpful install steps in README, per [Issue 29](https://github.com/moarwick/elm-webpack-starter/issues/29)
+* Update to latest packages
+
+**Ver 0.6.2**
+* Use `copy-webpack-plugin` instead of `cp` to copy files (Windows compatible)
+
+**Ver 0.6.0**
+* `elm-hot-loader` is back (no Elm code changes required!)
+* Switch to [bootstrap-sass](https://www.npmjs.com/package/bootstrap-sass) to demo CSS
+
+**Ver 0.5.0**
+* Update to Elm 0.17.0 (and other latest modules)
+* Upgrade starter code per [upgrade-docs](https://github.com/elm-lang/elm-platform/blob/master/upgrade-docs/0.17.md)
+* Remove `elm-hot-loader` (for now)
+
+**Ver 0.4.0**
+* Add [elm-hot-loader](https://github.com/fluxxu/elm-hot-loader) for HMR support (PR by [fluxxu](https://github.com/fluxxu))
+
+**Ver 0.3.0**
+* Use `html-webpack-plugin` to generate `index.html`
+* Apply hash filenames for bundled JS and CSS (prevents caching)
+* Image and favicon assets copied to `dist/`

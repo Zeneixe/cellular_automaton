@@ -42,7 +42,6 @@ var commonConfig = {
     plugins: [
         new webpack.LoaderOptionsPlugin({
             options: {
-                postcss: [autoprefixer()]
             }
         }),
         new HtmlWebpackPlugin({
@@ -100,7 +99,7 @@ if (isProd === true) {
                 test: /\.sc?ss$/,
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader', 'sass-loader']
+                    use: ['css-loader']
                 })
             }]
         },

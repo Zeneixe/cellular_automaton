@@ -1,4 +1,4 @@
-module Main exposing (Cell, CellRow, CellSize(..), CellValue(..), Grid, Model, Msg(..), RowRule(..), Ruleset, automateCell, automateGrid, automateRow, cellClass, checkRulesForCell, initRules, initialRow, invert, main, model, update, view, viewCell, viewCellRow, viewGrid, viewRule, viewRules)
+module Main exposing (main)
 
 import Array exposing (..)
 import Html exposing (..)

@@ -1,10 +1,10 @@
-module Main exposing (..)
+module Main exposing (Cell, CellRow, CellSize(..), CellValue(..), Grid, Model, Msg(..), RowRule(..), Ruleset, automateCell, automateGrid, automateRow, cellClass, checkRulesForCell, initRules, initialRow, invert, main, model, update, view, viewCell, viewCellRow, viewGrid, viewRule, viewRules)
 
 import Array exposing (..)
-import Maybe exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Maybe exposing (..)
 
 
 main : Program Never Model Msg
@@ -69,30 +69,30 @@ checkRulesForCell ruleset prevLeft prevMiddle prevRight =
         rule =
             RowRule prevLeft prevMiddle prevRight
     in
-        case rule of
-            RowRule Empty Empty Empty ->
-                ruleset.rule1
+    case rule of
+        RowRule Empty Empty Empty ->
+            ruleset.rule1
 
-            RowRule Empty Empty Full ->
-                ruleset.rule2
+        RowRule Empty Empty Full ->
+            ruleset.rule2
 
-            RowRule Empty Full Empty ->
-                ruleset.rule4
+        RowRule Empty Full Empty ->
+            ruleset.rule4
 
-            RowRule Empty Full Full ->
-                ruleset.rule8
+        RowRule Empty Full Full ->
+            ruleset.rule8
 
-            RowRule Full Empty Empty ->
-                ruleset.rule16
+        RowRule Full Empty Empty ->
+            ruleset.rule16
 
-            RowRule Full Empty Full ->
-                ruleset.rule32
+        RowRule Full Empty Full ->
+            ruleset.rule32
 
-            RowRule Full Full Empty ->
-                ruleset.rule64
+        RowRule Full Full Empty ->
+            ruleset.rule64
 
-            RowRule Full Full Full ->
-                ruleset.rule128
+        RowRule Full Full Full ->
+            ruleset.rule128
 
 
 automateCell : Ruleset -> Int -> CellRow -> Cell
@@ -113,7 +113,7 @@ automateCell ruleset i prev =
         value =
             checkRulesForCell ruleset prevLeft.value prevMiddle.value prevRight.value
     in
-        Cell value
+    Cell value
 
 
 automateRow : Ruleset -> Int -> CellRow -> CellRow
@@ -128,7 +128,7 @@ automateRow ruleset n prev =
         row =
             CellRow (range |> List.map (\i -> automateCell ruleset i prev))
     in
-        row
+    row
 
 
 initialRow : CellRow
@@ -154,10 +154,11 @@ automateGrid ruleset maxRows grid index prev =
         newIndex =
             index + 1
     in
-        if (index < maxRows) then
-            automateGrid ruleset maxRows newGrid newIndex newRow
-        else
-            grid
+    if index < maxRows then
+        automateGrid ruleset maxRows newGrid newIndex newRow
+
+    else
+        grid
 
 
 model : Model
@@ -169,15 +170,15 @@ model =
         initialGrid =
             Grid (automateGrid rules 125 [ initialRow ] 1 initialRow)
     in
-        Model initialGrid rules
+    Model initialGrid rules
 
 
 cellClass : CellValue -> CellSize -> Attribute Msg
 cellClass c s =
     classList
         [ ( "cell", True )
-        , ( "cell--full", (c == Full) )
-        , ( "cell--large", (s == Large) )
+        , ( "cell--full", c == Full )
+        , ( "cell--large", s == Large )
         ]
 
 
@@ -195,7 +196,7 @@ viewCellRow r =
 
 viewCell : CellValue -> CellSize -> Html Msg
 viewCell c s =
-    div [ (cellClass c s) ] []
+    div [ cellClass c s ] []
 
 
 viewRules : Ruleset -> Html Msg
@@ -244,16 +245,16 @@ viewRule rule number =
                 _ ->
                     ( Empty, Empty, Empty )
     in
-        div [ class "rule", onClick (SwitchRule number) ]
-            [ div [ class "rule__row" ]
-                [ viewCell ruleL Large
-                , viewCell ruleM Large
-                , viewCell ruleR Large
-                ]
-            , div [ class "rule__row" ]
-                [ viewCell rule Large
-                ]
+    div [ class "rule", onClick (SwitchRule number) ]
+        [ div [ class "rule__row" ]
+            [ viewCell ruleL Large
+            , viewCell ruleM Large
+            , viewCell ruleR Large
             ]
+        , div [ class "rule__row" ]
+            [ viewCell rule Large
+            ]
+        ]
 
 
 view : Model -> Html Msg
@@ -270,8 +271,9 @@ type Msg
 
 invert : CellValue -> CellValue
 invert cell =
-    if (cell == Full) then
+    if cell == Full then
         Empty
+
     else
         Full
 
@@ -316,4 +318,4 @@ update msg model =
         newGrid =
             Grid (automateGrid newRules 125 [ initialRow ] 1 initialRow)
     in
-        { model | rules = newRules, grid = newGrid }
+    { model | rules = newRules, grid = newGrid }

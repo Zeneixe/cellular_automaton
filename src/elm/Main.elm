@@ -136,22 +136,22 @@ initialRow =
 generateGrid :
     Ruleset
     -> RowIndex
-    -> List CellRow
+    -> Grid
     -> RowIndex
     -> CellRow
-    -> List CellRow
+    -> Grid
 generateGrid ruleset maxRows grid index prev =
     let
         newRow =
             generateRow ruleset index prev
 
         newGrid =
-            grid ++ [ newRow ]
+            Grid (grid.rows ++ [ newRow ])
 
         newIndex =
             index + 1
     in
-    if index < maxRows then
+    if index == maxRows then
         generateGrid ruleset maxRows newGrid newIndex newRow
 
     else
@@ -165,7 +165,7 @@ model =
             initRules
 
         initialGrid =
-            Grid (generateGrid rules 125 [ initialRow ] 1 initialRow)
+            generateGrid rules 125 (Grid [ initialRow ]) 1 initialRow
     in
     Model initialGrid rules
 
@@ -313,6 +313,6 @@ update msg model =
                             oldRules
 
         newGrid =
-            Grid (generateGrid newRules 125 [ initialRow ] 1 initialRow)
+            generateGrid newRules 125 (Grid [ initialRow ]) 1 initialRow
     in
     { model | rules = newRules, grid = newGrid }

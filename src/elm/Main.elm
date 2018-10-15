@@ -140,13 +140,17 @@ generateGrid :
     -> Grid
 generateGrid ruleset maxRows grid =
     let
-        index = List.length grid.rows
+        index =
+            List.length grid.rows
 
-        rowsArray = Array.fromList grid.rows
-        prevRowIndex = index - 1
+        rowsArray =
+            Array.fromList grid.rows
+
+        prevRowIndex =
+            index - 1
 
         lastRow =
-          withDefault (CellRow []) (Array.get prevRowIndex rowsArray)
+            withDefault (CellRow []) (Array.get prevRowIndex rowsArray)
 
         newRow =
             generateRow ruleset index lastRow

@@ -31,19 +31,11 @@ type alias Grid =
 
 
 type alias CellRow =
-    { cells : List Cell }
-
-
-type alias Cell =
-    { value : CellValue }
+    { cells : List CellValue }
 
 
 type alias Model =
     { grid : Grid, rules : Ruleset }
-
-
-type RowRule
-    = RowRule CellValue CellValue CellValue
 
 
 type alias Ruleset =
@@ -67,53 +59,50 @@ checkRulesForCell : Ruleset -> CellValue -> CellValue -> CellValue -> CellValue
 checkRulesForCell ruleset prevLeft prevMiddle prevRight =
     let
         rule =
-            RowRule prevLeft prevMiddle prevRight
+            ( prevLeft, prevMiddle, prevRight )
     in
     case rule of
-        RowRule Empty Empty Empty ->
+        ( Empty, Empty, Empty ) ->
             ruleset.rule1
 
-        RowRule Empty Empty Full ->
+        ( Empty, Empty, Full ) ->
             ruleset.rule2
 
-        RowRule Empty Full Empty ->
+        ( Empty, Full, Empty ) ->
             ruleset.rule4
 
-        RowRule Empty Full Full ->
+        ( Empty, Full, Full ) ->
             ruleset.rule8
 
-        RowRule Full Empty Empty ->
+        ( Full, Empty, Empty ) ->
             ruleset.rule16
 
-        RowRule Full Empty Full ->
+        ( Full, Empty, Full ) ->
             ruleset.rule32
 
-        RowRule Full Full Empty ->
+        ( Full, Full, Empty ) ->
             ruleset.rule64
 
-        RowRule Full Full Full ->
+        ( Full, Full, Full ) ->
             ruleset.rule128
 
 
-automateCell : Ruleset -> Int -> CellRow -> Cell
+automateCell : Ruleset -> Int -> CellRow -> CellValue
 automateCell ruleset i prev =
     let
         prevArray =
             prev.cells |> Array.fromList
 
         prevLeft =
-            withDefault (Cell Empty) (Array.get (i - 2) prevArray)
+            withDefault Empty (Array.get (i - 2) prevArray)
 
         prevMiddle =
-            withDefault (Cell Empty) (Array.get (i - 1) prevArray)
+            withDefault Empty (Array.get (i - 1) prevArray)
 
         prevRight =
-            withDefault (Cell Empty) (Array.get i prevArray)
-
-        value =
-            checkRulesForCell ruleset prevLeft.value prevMiddle.value prevRight.value
+            withDefault Empty (Array.get i prevArray)
     in
-    Cell value
+    checkRulesForCell ruleset prevLeft prevMiddle prevRight
 
 
 automateRow : Ruleset -> Int -> CellRow -> CellRow
@@ -133,7 +122,7 @@ automateRow ruleset n prev =
 
 initialRow : CellRow
 initialRow =
-    CellRow [ Cell Full ]
+    CellRow [ Full ]
 
 
 automateGrid :
@@ -191,7 +180,7 @@ viewGrid g =
 viewCellRow : CellRow -> Html Msg
 viewCellRow r =
     div [ class "cell-row" ]
-        (List.map (\c -> viewCell c.value Small) r.cells)
+        (List.map (\c -> viewCell c Small) r.cells)
 
 
 viewCell : CellValue -> CellSize -> Html Msg

@@ -16,11 +16,6 @@ main =
         }
 
 
-type CellValue
-    = Empty
-    | Full
-
-
 type CellSize
     = Small
     | Large
@@ -28,6 +23,19 @@ type CellSize
 
 type alias Grid =
     { rows : List CellRow }
+
+
+type CellValue
+    = Empty
+    | Full
+
+
+type alias CellIndex =
+    Int
+
+
+type alias RowIndex =
+    Int
 
 
 type alias CellRow =
@@ -55,8 +63,8 @@ initRules =
     Ruleset Empty Full Full Full Full Empty Empty Empty
 
 
-checkRulesForCell : Ruleset -> CellValue -> CellValue -> CellValue -> CellValue
-checkRulesForCell ruleset prevLeft prevMiddle prevRight =
+applyRuleset : CellValue -> CellValue -> CellValue -> Ruleset -> CellValue
+applyRuleset prevLeft prevMiddle prevRight ruleset =
     let
         rule =
             ( prevLeft, prevMiddle, prevRight )
@@ -87,8 +95,8 @@ checkRulesForCell ruleset prevLeft prevMiddle prevRight =
             ruleset.rule128
 
 
-automateCell : Ruleset -> Int -> CellRow -> CellValue
-automateCell ruleset i prev =
+generateCell : Ruleset -> CellIndex -> CellRow -> CellValue
+generateCell ruleset i prev =
     let
         prevArray =
             prev.cells |> Array.fromList
@@ -102,11 +110,11 @@ automateCell ruleset i prev =
         prevRight =
             withDefault Empty (Array.get i prevArray)
     in
-    checkRulesForCell ruleset prevLeft prevMiddle prevRight
+    ruleset |> applyRuleset prevLeft prevMiddle prevRight
 
 
-automateRow : Ruleset -> Int -> CellRow -> CellRow
-automateRow ruleset n prev =
+generateRow : Ruleset -> RowIndex -> CellRow -> CellRow
+generateRow ruleset n prev =
     let
         rowSize =
             1 + (2 * n)
@@ -115,7 +123,7 @@ automateRow ruleset n prev =
             List.range 0 (rowSize - 1)
 
         row =
-            CellRow (range |> List.map (\i -> automateCell ruleset i prev))
+            CellRow (range |> List.map (\i -> generateCell ruleset i prev))
     in
     row
 
@@ -125,17 +133,17 @@ initialRow =
     CellRow [ Full ]
 
 
-automateGrid :
+generateGrid :
     Ruleset
-    -> number
+    -> RowIndex
     -> List CellRow
-    -> number
+    -> RowIndex
     -> CellRow
     -> List CellRow
-automateGrid ruleset maxRows grid index prev =
+generateGrid ruleset maxRows grid index prev =
     let
         newRow =
-            automateRow ruleset index prev
+            generateRow ruleset index prev
 
         newGrid =
             grid ++ [ newRow ]
@@ -144,7 +152,7 @@ automateGrid ruleset maxRows grid index prev =
             index + 1
     in
     if index < maxRows then
-        automateGrid ruleset maxRows newGrid newIndex newRow
+        generateGrid ruleset maxRows newGrid newIndex newRow
 
     else
         grid
@@ -157,7 +165,7 @@ model =
             initRules
 
         initialGrid =
-            Grid (automateGrid rules 125 [ initialRow ] 1 initialRow)
+            Grid (generateGrid rules 125 [ initialRow ] 1 initialRow)
     in
     Model initialGrid rules
 
@@ -305,6 +313,6 @@ update msg model =
                             oldRules
 
         newGrid =
-            Grid (automateGrid newRules 125 [ initialRow ] 1 initialRow)
+            Grid (generateGrid newRules 125 [ initialRow ] 1 initialRow)
     in
     { model | rules = newRules, grid = newGrid }

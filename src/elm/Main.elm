@@ -319,7 +319,9 @@ update msg model =
                         _ ->
                             oldRules
 
-        oldGridLength = List.length model.grid.rows
+        oldGridLength =
+            List.length model.grid.rows
+
         newGrid =
             generateGrid newRules oldGridLength (Grid [ initialRow ])
     in

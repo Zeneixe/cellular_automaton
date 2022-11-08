@@ -28,7 +28,7 @@
     "webpack-dev-server": "^2.11.3"
   },
   "dependencies": {
-    "loader-utils": "^1.1.0",
+    "loader-utils": "^1.4.1",
     "webpack-merge": "^4.1.4"
   }
 }
